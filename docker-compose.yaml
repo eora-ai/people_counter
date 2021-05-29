@@ -6,7 +6,7 @@ services:
     networks:
       - people-counter
     ports:
-      - 8000:8000
+      - 8789:8000
   redis:
     image: redis
     networks:
@@ -14,7 +14,7 @@ services:
   inferoxy:
     networks:
       - people-counter
-    image: registry.visionhub.ru/inferoxy:local
+    image: public.registry.visionhub.ru/inferoxy:v1.0.4
     env_file:
       - .env.inferoxy
     volumes:
@@ -23,4 +23,3 @@ services:
 
 networks:
   people-counter:
-    name: people-counter

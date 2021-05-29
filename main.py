@@ -18,7 +18,7 @@ def read_image(image: bytes) -> np.ndarray:
 
 def make_package(image_arr: np.ndarray) -> dict:
     return {
-        "model": "facedet-retinaface",
+        "model": "facedet-recognition",
         "source_id": str(uuid4()),
         "inputs": [
             {
@@ -44,8 +44,7 @@ async def count_peoples(image: bytes) -> int:
     image_arr = read_image(image)
     json_package = make_package(image_arr)
     result = await process(json_package)
-    logger.info(f"Result {result['outputs'][0]['output']}")
-    peoples = 1
+    peoples = len(result["outputs"][0]["output"]["faces"])
     return peoples
 
 
