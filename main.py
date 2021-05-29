@@ -1,8 +1,11 @@
 import io
+from uuid import uuid4
 
+import httpx
 import numpy as np
 from PIL import Image
 
+from uvicorn.config import logger
 from fastapi import FastAPI, File
 
 app = FastAPI()
@@ -14,22 +17,39 @@ def read_image(image: bytes) -> np.ndarray:
 
 
 def make_package(image_arr: np.ndarray) -> dict:
-    return {}
+    return {
+        "model": "facedet-retinaface",
+        "source_id": str(uuid4()),
+        "inputs": [
+            {
+                "shape": image_arr.shape,
+                "datatype": "uint8",
+                "data": image_arr.ravel().tolist(),
+                "parameters": {},
+            },
+        ],
+    }
 
 
-def process(package: dict) -> dict:
-    return {"outputs": [{"output": {"faces": [1, 2, 3]}}]}
+async def process(package: dict) -> dict:
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            "http://inferoxy:8698/infer", json=package, timeout=None
+        )
+    result = response.json()
+    return result
 
 
-def count_peoples(image: bytes) -> int:
+async def count_peoples(image: bytes) -> int:
     image_arr = read_image(image)
     json_package = make_package(image_arr)
-    result = process(json_package)
-    peoples = len(result["outputs"][0]["output"]["faces"])
+    result = await process(json_package)
+    logger.info(f"Result {result['outputs'][0]['output']}")
+    peoples = 1
     return peoples
 
 
 @app.post("/count")
 async def count_peoples_route(image: bytes = File(...)):
-    peoples_number = count_peoples(image)
+    peoples_number = await count_peoples(image)
     return {"peoples": peoples_number}

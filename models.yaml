@@ -1,4 +1,4 @@
-facedet-retnaface:
+facedet-retinaface:
   address: registry.visionhub.ru/models/stub:v5
   batch_size: 256
   run_on_gpu: False
