@@ -13,7 +13,12 @@ def read_image(image: bytes) -> np.ndarray:
     return arr
 
 
-@app.post("/count")
-async def count_peoples(image: bytes = File(...)):
+def count_peoples(image: bytes) -> int:
     image_arr = read_image(image)
-    return {"shape": image_arr.shape[0]}
+    return image_arr.shape[0]
+
+
+@app.post("/count")
+async def count_peoples_route(image: bytes = File(...)):
+    peoples_number = count_peoples(image)
+    return {"peoples": peoples_number}
