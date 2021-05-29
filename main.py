@@ -13,9 +13,20 @@ def read_image(image: bytes) -> np.ndarray:
     return arr
 
 
+def make_package(image_arr: np.ndarray) -> dict:
+    return {}
+
+
+def process(package: dict) -> dict:
+    return {"outputs": [{"output": {"faces": [1, 2, 3]}}]}
+
+
 def count_peoples(image: bytes) -> int:
     image_arr = read_image(image)
-    return image_arr.shape[0]
+    json_package = make_package(image_arr)
+    result = process(json_package)
+    peoples = len(result["outputs"][0]["output"]["faces"])
+    return peoples
 
 
 @app.post("/count")
