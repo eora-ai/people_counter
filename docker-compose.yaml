@@ -1,0 +1,26 @@
+version: "3.1"
+
+services:
+  app:
+    build: .
+    networks:
+      - people-counter
+    ports:
+      - 8000:8000
+  redis:
+    image: redis
+    networks:
+      - people-counter
+  inferoxy:
+    networks:
+      - people-counter
+    image: registry.visionhub.ru/inferoxy:local
+    env_file:
+      - .env.inferoxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./models.yaml:/etc/inferoxy/models.yaml
+
+networks:
+  people-counter:
+    name: people-counter
